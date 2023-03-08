@@ -3,7 +3,6 @@ package fr.ptut2022.simulateur_mcdu;
 import org.springframework.messaging.simp.stomp.*;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     @Override
@@ -32,5 +31,10 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     public void handleFrame(StompHeaders headers, Object payload) {
         ClickResult clickResult = (ClickResult) payload;
         System.out.println(clickResult.getLskKey() + " : " + clickResult.getInput());
+        try {
+            Main.updateView(clickResult.getLskKey(), new Donnee("toto", clickResult.getInput(), "red"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
