@@ -1,13 +1,15 @@
 package fr.ptut2022.simulateur_mcdu;
 
+import fr.ptut2022.simulateur_mcdu.handlers.ControlClickHandler;
+import fr.ptut2022.simulateur_mcdu.handlers.LskClickHandler;
 import org.springframework.messaging.simp.stomp.*;
 
-import java.lang.reflect.Type;
-
 public class MyStompSessionHandler extends StompSessionHandlerAdapter {
+
     @Override
     public void afterConnected(StompSession session, StompHeaders connectedHeaders) {
-        session.subscribe("/setting/receive/click", this);
+        session.subscribe("/setting/receive/click/lsk", new LskClickHandler());
+        session.subscribe("/setting/receive/click/control", new ControlClickHandler());
     }
 
     @Override
@@ -20,21 +22,5 @@ public class MyStompSessionHandler extends StompSessionHandlerAdapter {
     public void handleTransportError(StompSession session, Throwable exception) {
         System.err.println("handleTransportError : ");
         exception.printStackTrace();
-    }
-
-    @Override
-    public Type getPayloadType(StompHeaders headers) {
-        return ClickResult.class;
-    }
-
-    @Override
-    public void handleFrame(StompHeaders headers, Object payload) {
-        ClickResult clickResult = (ClickResult) payload;
-        System.out.println(clickResult.getLskKey() + " : " + clickResult.getInput());
-        try {
-            Main.updateView(clickResult.getLskKey(), new Donnee("toto", clickResult.getInput(), "red"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }
